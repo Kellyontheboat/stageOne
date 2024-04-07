@@ -1,0 +1,222 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  justify-content: center;
+}
+
+/* navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 20px;
+  padding: 20px;
+}
+
+.nav-item-container {
+  display: flex;
+  align-items: center;
+}
+
+.nav-item {
+  margin-right: 15px;
+}
+/* navbarWelcome */
+.navbarWelcome {
+  background-color: lightblue;
+  display: flex;
+  justify-content: center;
+  /* Horizontally center the content */
+  align-items: center;
+  /* Vertically center the content */
+  text-align: center;
+  margin-bottom: 40px;
+  height: 250px;
+}
+
+.navbarWelcome h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+/* smallBox */
+.grid-container-tab {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-rows: 50px;
+  grid-gap: 20px;
+  width: 1200px;
+  margin: 0 auto;
+  padding: 20px, 20px, 20px, 20px;
+}
+
+.grid-item-tab {
+  background-color: lightblue;
+  display: flex;
+  align-items: center;
+  /* Center vertically */
+}
+
+/* smallBox上的小圖 */
+img {
+  width: 80px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.promotion {
+  margin-left: 10px;
+}
+
+/* bigBox */
+.grid-container-img {
+  display: grid;
+  grid-template-columns: calc((1100px / 3) + 20px) repeat(4, auto);
+  grid-template-rows: repeat(2, calc(((1100px / 3) + 20px)* 0.5));
+  grid-gap: 20px;
+  width: 1200px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.grid-item-img {
+  background-image: url('dune.jpeg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.title {
+  position: absolute;
+  bottom: 0;
+  /* Align the title to the bottom of the grid item */
+  width: 100%;
+  /* Full width */
+  background-color: rgba(0, 0, 0, 0.2);
+  /* Transparent gray background */
+  color: #000000;
+  /* Text color */
+  text-align: center;
+  /* Center align text */
+  padding: 10px 0;
+  /* Add padding to the title */
+}
+
+.fa-solid.fa-star {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 5px;
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+  color: yellow;
+}
+
+/* mobile nav */
+.mobile-nav-item-container {
+  display: none;
+  /* Hide the mobile nav items when the screen size > 1200px */
+}
+
+.menu-icon {
+  display: none;
+  /* Hide the mobile nav items when the screen size > 1200px */
+}
+
+
+@media (max-width: 1200px) {
+  /* smallBox */
+  .grid-container-tab {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 90%;
+    margin: 0 auto;
+  }
+  
+  .grid-item-tab {
+    flex-grow: 1;
+    /* Allow items to grow */
+    min-width: calc((90% - 20px) / 2);
+    /* Minimum width for each item */
+    height: 50px;
+  }
+  
+  /* bigBox */
+  .grid-container-img {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .grid-item-img{
+    flex-grow: 1;
+    /* Allow items to grow */
+    min-width: calc((90% - 20px * 3) / 4);
+    /* Minimum width for each item */
+    height: 150px;
+  }
+}
+
+@media (max-width: 600px) {
+
+/* hide the nav items when the screen size < 600px */
+  .nav-item-container {
+    display: none;
+  }
+
+  .nav-item {
+    display: none;
+  }
+
+  /* mobile nav */
+  .mobile-nav-item-container {
+    position: fixed;
+    top: 25px;
+    right: 0;
+    width: 60%;
+    min-height: 100vh;
+    display: block;
+    z-index: 1;
+    background-color: rgb(255, 255, 255);
+    margin: 0 auto;
+  }
+
+  .mobile-nav-item {
+    text-align: center;
+    height: 50px;
+  }
+
+  .menu-icon {
+    cursor: pointer;
+    display: block;
+    z-index: 2;
+  }
+
+  /* smallBox */
+  .grid-item-tab {
+    flex-grow: 1;
+    /* Allow items to grow */
+    min-width: 90%;
+    height: 50px;
+  }
+
+  /* bigBox */
+  .grid-container-img {
+    display: flex;
+    gap: 20px;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .grid-item-img{
+    flex-grow: 1;
+    /* Allow items to grow */
+    min-width: 90%;
+    height: 150px;
+  }
+}
