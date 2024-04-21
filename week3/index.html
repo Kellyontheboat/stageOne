@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid System Example</title>
+  <link rel="stylesheet" href="style_1.css">
+  <script src="https://kit.fontawesome.com/a595ab4e10.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="navbar">
+    <span>MyWebsite</span>
+    <span class="nav-item-container">
+      <!-- using js to insert content -->
+    </span>
+
+    <span onclick="changeToX()" style="display:none" class="mobile-nav-item-container">
+      <!-- using js to insert content -->
+    </span>
+
+    <span class="menu-icon">
+      <i onclick="changeToX()" class="toggle-icon fa-solid fa-bars" id="burgerIcon"></i>
+      <i onclick="changeToB()" style="display:none" class="fa-sharp fa-solid fa-xmark" id="xmarkIcon"></i>
+    </span>
+
+  </div>
+  <div class="navbarWelcome">
+    <h1>Welcome to MyHome</h1>
+  </div>
+  <div class="grid-container-tab">
+    <!-- using js to insert content -->
+  </div>
+  <div class="grid-container-img">
+    <!-- using js to insert content -->
+  </div>
+
+  <!-- using js to insert content -->
+  <script src="script.js"></script>
+  
+  <!-- using js to interact with clicking on burger icon-->
+  <script>
+    const burgerIcon = document.getElementById('burgerIcon');
+    const xmarkIcon = document.getElementById('xmarkIcon');
+    const mobileNavItemContainer = document.querySelector('.mobile-nav-item-container');
+
+    function changeToX() {
+      burgerIcon.style.display="none";
+      xmarkIcon.style.display="block";
+      mobileNavItemContainer.style.display="block";
+    }
+
+    function changeToB() {
+      burgerIcon.style.display="block";
+      xmarkIcon.style.display="none";
+      mobileNavItemContainer.style.display="none";
+    }
+  </script>
+</body>
+
+</html>
