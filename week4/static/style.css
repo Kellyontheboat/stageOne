@@ -1,0 +1,60 @@
+body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* navbar */
+        .navbar {
+            background-color: rgb(1, 43, 57);
+            display: flex;
+            justify-content: center;
+            /* Horizontally center the content */
+            align-items: center;
+            /* Vertically center the content */
+            text-align: center;
+            margin-bottom: 40px;
+            height: 250px;
+        }
+
+        .navbarText h1 {
+            font-size: 40px;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        
