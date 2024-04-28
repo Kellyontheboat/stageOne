@@ -1,8 +1,9 @@
 <hr>
-<form action="{{ url_for('square') }}" method="post"  novalidate onsubmit="return validInt()">
+<form action="{{ url_for('square', enter_int=4) if enter_int is not none else url_for('square') }}"
+  method="post" novalidate onsubmit="return validInt()">
 <div class="form-group">
   <label for="enter_int">正整數</label>
-  <input type="number" id="enter_int" name="enter_int" >
+  <input type="number" id="enter_int" name="enter_int" required>
 </div>
 <div class="form-group">
   <button type="submit">計算</button>

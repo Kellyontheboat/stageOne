@@ -25,17 +25,6 @@
     </div>
   </form>
 
-  <!-- <hr>
-  <script src="../static/script.js"></script>
-  <form  action="{{ url_for('square') }}" method="post" onsubmit="return validInt()" novalidate>
-    <div class="form-group">
-      <label for="enter_int">正整數</label>
-      <input type="number" id="enter_int" name="enter_int">
-    </div>
-    <div class="form-group">
-      <button type="submit">計算</button>
-    </div>
-  </form> -->
   {% block square_form %}
     {% include "square_form.html" %}
   {% endblock %}

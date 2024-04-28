@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Request, Form, Depends, HTTPException
+from fastapi import FastAPI, Request, Form, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
+from typing import Optional
 
 app = FastAPI()
 
@@ -29,7 +30,7 @@ async def get_session(request: Request):
     return session
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, name="home")
 async def homepage(request: Request, session: dict = Depends(get_session)):
 
     if session["SIGNED-IN"] == True:
@@ -37,16 +38,8 @@ async def homepage(request: Request, session: dict = Depends(get_session)):
     
     return templates.TemplateResponse(request=request, name="signin.html")
 
-@app.get("/signin", response_class=HTMLResponse)
-async def signin(request: Request, session: dict = Depends(get_session)):
-    
 
-    if session["SIGNED-IN"] == True:
-        return RedirectResponse(url="/member", status_code=303)
-    
-    return templates.TemplateResponse(request=request, name="signin.html")
-
-@app.post("/signin", response_class=HTMLResponse)
+@app.post("/signin", response_class=HTMLResponse, name="signin")
 async def process_login(request: Request, username: str = Form(None), password: str = Form(None)):
 
     
@@ -86,32 +79,11 @@ async def signout(request: Request, session: dict = Depends(get_session)):
     session["SIGNED-IN"] = False
     return RedirectResponse(url="/", status_code=303)
 
-@app.get("/square", response_class=HTMLResponse)
-async def square(request: Request, enter_int: str = Form(...)):
-    if enter_int is not None:
-            
-            return RedirectResponse(url="/square/{enter_int}", status_code=303)
-    else:
-            return RedirectResponse(url="/", status_code=303)
-
-
-@app.post("/square", response_class=HTMLResponse)
-async def get_int(request: Request, enter_int: str = Form(...)):
-    # use js to redirect instead
-    # if enter_int.isdigit():
-    #     return RedirectResponse(url=f"/square/{enter_int}", status_code=303)
-    # else:
-    #     RedirectResponse(url="/", status_code=303)
-    pass
-
 @app.get("/square/{enter_int}", response_class=HTMLResponse, name="square")
-async def square(request: Request, enter_int: int):
-    
-    if enter_int:
-        return templates.TemplateResponse("square_result.html", {"request": request, "square": enter_int**2})
+async def square_result(request: Request, enter_int: Optional[int] = None):
+    if enter_int is not None:
+        # If enter_int is provided, calculate the square and render the result
+        return templates.TemplateResponse("square_result.html", {"request": request, "square": enter_int ** 2})
     else:
-        # Handle the case where enter_int is empty or invalid
-        return RedirectResponse(url="/", status_code=303)
-
-
-    
+        # If enter_int is not provided, render the form with enter_int set to None
+        return templates.TemplateResponse("square_form.html", {"request": request, "enter_int": None})
