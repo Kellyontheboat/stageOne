@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, Depends, HTTPException, Query
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -42,7 +42,6 @@ async def homepage(request: Request, session: dict = Depends(get_session)):
 @app.post("/signin", response_class=HTMLResponse, name="signin")
 async def process_login(request: Request, username: str = Form(None), password: str = Form(None)):
 
-    
     if not username or not password:
         error_message = "帳號或密碼不能為空"
         return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
@@ -51,8 +50,6 @@ async def process_login(request: Request, username: str = Form(None), password: 
         error_message = "帳號或密碼輸入錯誤"
         return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
         
-        
-    
     if username in user_db and password == user_db[username]:
         request.session["SIGNED-IN"] = True
         request.session["username"] = username
@@ -82,8 +79,6 @@ async def signout(request: Request, session: dict = Depends(get_session)):
 @app.get("/square/{enter_int}", response_class=HTMLResponse, name="square")
 async def square_result(request: Request, enter_int: Optional[int] = None):
     if enter_int is not None:
-        # If enter_int is provided, calculate the square and render the result
         return templates.TemplateResponse("square_result.html", {"request": request, "square": enter_int ** 2})
     else:
-        # If enter_int is not provided, render the form with enter_int set to None
         return templates.TemplateResponse("square_form.html", {"request": request, "enter_int": None})
