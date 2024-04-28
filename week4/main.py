@@ -97,30 +97,21 @@ async def square(request: Request, enter_int: str = Form(...)):
 
 @app.post("/square", response_class=HTMLResponse)
 async def get_int(request: Request, enter_int: str = Form(...)):
-    if enter_int.isdigit():
-        return RedirectResponse(url=f"/square/{enter_int}", status_code=303)
-    else:
-        RedirectResponse(url="/", status_code=303)
+    # use js to redirect instead
+    # if enter_int.isdigit():
+    #     return RedirectResponse(url=f"/square/{enter_int}", status_code=303)
+    # else:
+    #     RedirectResponse(url="/", status_code=303)
+    pass
 
 @app.get("/square/{enter_int}", response_class=HTMLResponse, name="square")
 async def square(request: Request, enter_int: int):
-    # print(f"Received enter_int: {enter_int}") # Debugging line
-    # try:
-    #     enter_int = int(enter_int)
-    # except ValueError as e:
-    #     print(f"Error converting enter_int to int: {e}") # Debugging line
-    #     # Handle the error, e.g., by returning an error response
-    #     return templates.TemplateResponse("error.html", {"request": request, "error": str(e)})
+    
     if enter_int:
         return templates.TemplateResponse("square_result.html", {"request": request, "square": enter_int**2})
     else:
         # Handle the case where enter_int is empty or invalid
         return RedirectResponse(url="/", status_code=303)
 
-# @app.post("/square", response_class=HTMLResponse)
-# async def get_int(request: Request, enter_int: str = Form(...)):
-#     if enter_int.isdigit():  # Check if the input is a valid integer
-#         return RedirectResponse(url=f"/square/{enter_int}", status_code=303)
-#     else:
-#         raise HTTPException(status_code=400, detail="Please enter a valid integer value")
+
     

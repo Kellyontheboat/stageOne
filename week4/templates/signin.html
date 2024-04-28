@@ -25,7 +25,7 @@
     </div>
   </form>
 
-  <hr>
+  <!-- <hr>
   <script src="../static/script.js"></script>
   <form  action="{{ url_for('square') }}" method="post" onsubmit="return validInt()" novalidate>
     <div class="form-group">
@@ -35,12 +35,11 @@
     <div class="form-group">
       <button type="submit">計算</button>
     </div>
-  </form>
-  <!-- {% block square_form %}
-    <script src="../static/script.js"></script>
+  </form> -->
+  {% block square_form %}
     {% include "square_form.html" %}
   {% endblock %}
-{% endblock %} -->
+{% endblock %}
 
 
 
