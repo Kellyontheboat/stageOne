@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}FastAPI Jinja2 Example{% endblock %}</title>
-  <!-- <script src="script.js"></script> -->
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="../static/script.js"></script>
+</head>
 
-  </head>
-
-  <body>
+<body>
   <header>
     <!-- header content -->
     <div class="navbar">
@@ -20,6 +20,6 @@
   <main>
     {% block content %}content here{% endblock %}
   </main>
-  </body>
+</body>
 
 </html>

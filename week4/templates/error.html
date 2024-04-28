@@ -4,7 +4,7 @@
 {% block h1 %}失敗頁面{% endblock %}
 
 {% block content %}
-<!-- The onsubmit attribute specifies a JavaScript function to be executed when the form is submitted. In this case, it calls
-the validateForm() function. -->
-<h1>帳號或密碼輸入錯誤</h1>
+<h1>{{ message }}</h1>
+<a href="/">返回首頁</a>
 {% endblock %}
+
