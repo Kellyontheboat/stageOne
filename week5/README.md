@@ -15,7 +15,7 @@ CREATE TABLE `member` (
     `name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name',
     `username` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username',
     `password`  VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Password',
-    `follower_count` INT UNSIGNED COMMENT 'Follower Count',
+    `follower_count` INT UNSIGNED DEFAULT 0 COMMENT 'Follower Count',
     `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Signup Time'
 );
 ```
