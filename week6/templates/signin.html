@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}登入{% endblock %}
+{% block h1 %}歡迎光臨，請輸入帳號密碼{% endblock %}
+
+{% block content %}
+  <script src="../static/script.js"></script>
+  <h2>登入系統</h2>
+  <form action="{{ url_for('signin') }}" method="post" onsubmit="return validateForm()" novalidate>
+    <!-- onsubmit="return validateForm()" -->
+    <div class="form-group">
+      <label for="username">帳號</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+      <label for="password">密碼</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <div class="form-group">
+      <label for="agree">同意條款</label>
+      <input type="checkbox" id="agree" name="agree" required>
+    </div>
+    <div class="form-group">
+      <button type="submit">登入</button>
+    </div>
+  </form>
+
+  {% block square_form %}
+    {% include "square_form.html" %}
+  {% endblock %}
+{% endblock %}
+
+
+
+
