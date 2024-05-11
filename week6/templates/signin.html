@@ -4,10 +4,28 @@
 {% block h1 %}歡迎光臨，請輸入帳號密碼{% endblock %}
 
 {% block content %}
-  <script src="../static/script.js"></script>
+  
+  <h2>註冊帳號</h2>
+  <form action="{{ url_for('signup') }}" method="post" onsubmit="return submitForm()" novalidate>
+    <div class="form-group">
+      <label for="signup_name">姓名</label>
+      <input type="text" id="signup_name" name="signup_name" required>
+    </div>
+    <div class="form-group">
+      <label for="signup_username">帳號</label>
+      <input type="text" id="signup_username" name="signup_username" required>
+    </div>
+    <div class="form-group">
+      <label for="signup_password">密碼</label>
+      <input type="password" id="signup_password" name="signup_password" required>
+    </div>
+    <div class="form-group">
+      <button type="submit">註冊</button>
+    </div>
+  </form>
+
   <h2>登入系統</h2>
-  <form action="{{ url_for('signin') }}" method="post" onsubmit="return validateForm()" novalidate>
-    <!-- onsubmit="return validateForm()" -->
+  <form action="{{ url_for('signin') }}" method="post" onsubmit="return validateForm()" id="square-form" novalidate>
     <div class="form-group">
       <label for="username">帳號</label>
       <input type="text" id="username" name="username" required>
