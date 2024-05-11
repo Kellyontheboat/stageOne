@@ -35,7 +35,7 @@ def get_connection():
     return conn_pool.get_connection()
 
 
-def execute_query(query, params=Tuple, commit=False) -> Tuple[List[Tuple], List[str]]:
+def execute_query(query, params: Tuple = (), commit=False) -> Tuple[List[Tuple], List[str]]:
     con = get_connection()
     cursor = con.cursor()
     cursor.execute(query, params)
@@ -62,7 +62,13 @@ def check_existing_username(username: str):
 
 def insert_new_user(name: str, username: str, password: str):
     insert_query = "INSERT INTO member (name, username, password) VALUES (%s, %s, %s)"
-    execute_query(insert_query, (name, username, password), commit=True)
+    return execute_query(insert_query, (name, username, password), commit=True)
+
+def join_member_message():
+    join_query = "SELECT * FROM `message` JOIN `member` ON message.member_id = member.id"
+    return execute_query(join_query)
+
+
 class Member(BaseModel):
     #id: int
     name: str
@@ -97,7 +103,6 @@ async def process_login(request: Request, username: str = Form(None), password: 
     # Authenticate user from database
     user_data, column_names = authenticate_user(username, password)
 
-    
     if not user_data:
         error_message = "帳號或密碼輸入錯誤"
         return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
@@ -143,8 +148,19 @@ async def member(request: Request, session: dict = Depends(get_session)):
     # signed_in = session.get("SIGNED-IN", False)
     # if not signed_in:
     if session["SIGNED-IN"] == True:
+
+        messages, column_names = join_member_message()
+
+        messages_dic = {}
+        for message in messages:
+            content = message[2]
+            name = message[6]
+            messages_dic[name] = content
+        print(messages)
+
         return templates.TemplateResponse(request=request, name="member.html", context={"username": session.get("username")})
-        
+
+
     return RedirectResponse(url="/", status_code=303)
  
 @app.get("/error", response_class=HTMLResponse)
@@ -158,6 +174,19 @@ async def signout(request: Request, session: dict = Depends(get_session)):
     session.clear()
     # Redirect to the home page
     return RedirectResponse(url="/", status_code=303)
+
+@app.post("/createMessage", response_class=HTMLResponse)
+async def create_message(request: Request, message: str = Form(...), session: dict = Depends(get_session)):
+    if not session["SIGNED-IN"]:
+        return RedirectResponse(url="/", status_code=303)
+
+    # Insert the message into the message table
+    insert_query = "INSERT INTO message (member_id, message) VALUES (%s, %s)"
+    execute_query(insert_query, (session["id"], message), commit=True)
+
+    return RedirectResponse(url="/member", status_code=303)
+
+
 
 @app.get("/square/{enter_int}", response_class=HTMLResponse, name="square")
 async def square_result(request: Request, enter_int: Optional[int] = None):
