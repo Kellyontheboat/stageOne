@@ -151,14 +151,14 @@ async def member(request: Request, session: dict = Depends(get_session)):
 
         messages, column_names = join_member_message()
 
-        messages_dic = {}
+        messages_list = []
         for message in messages:
             content = message[2]
             name = message[6]
-            messages_dic[name] = content
-        print(messages)
+            messages_list.append((name, content))
+        print(messages_list)
 
-        return templates.TemplateResponse(request=request, name="member.html", context={"username": session.get("username")})
+        return templates.TemplateResponse(request=request, name="member.html", context={"username": session.get("username"), "messages_list": messages_list})
 
 
     return RedirectResponse(url="/", status_code=303)
