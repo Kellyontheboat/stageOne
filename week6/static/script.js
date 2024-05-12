@@ -1,13 +1,23 @@
-function submitForm() {
-  //event.preventDefault();
-  let nameInput = document.getElementById("name").value;
-  let usernameInput = document.getElementById("username").value;
-  let passwordInput = document.getElementById("password").value;
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("signupButton").addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent default form submission
+    submitForm(); // Call the submitForm function
+  });
 
-  if (!nameInput || !usernameInput || !passwordInput){
-    alert("Please fill all fields.");
+  function submitForm() {
+    let nameInput = document.getElementById("signup_name").value;
+    let usernameInput = document.getElementById("signup_username").value;
+    let passwordInput = document.getElementById("signup_password").value;
+
+    if (!nameInput || !usernameInput || !passwordInput) {
+      alert("Please fill all fields.");
+      return false; // prevent form submission
+    }
+    // If all fields are filled, you can submit the form programmatically
+    document.getElementById("signupForm").submit();
   }
-}
+});
+
 
 function validateForm() {
   let agreeCheckbox = document.getElementById("agree");

@@ -39,14 +39,16 @@ def execute_query(query, params: Tuple = (), commit=False) -> Tuple[List[Tuple],
     con = get_connection()
     cursor = con.cursor()
     cursor.execute(query, params)
-    # Get column_names = ['id', 'name', 'username', 'password', 'follower_count', 'time']
-    column_names = [desc[0] for desc in cursor.description]
+    
     # commit flag indicate whether the current operation requires committing the transaction to the database
     # delete,update,insert commit change to db and typically do not return meaningful results like select queries do
     # If commit is True, indicating that the operation was an insert, update, or delete operation, result is set to None because there is no meaningful result to return in these cases.
     if commit:
         con.commit()
     result = cursor.fetchall() if not commit else None
+    # Get column_names = ['id', 'name', 'username', 'password', 'follower_count', 'time']
+    column_names = [desc[0] for desc in cursor.description] if not commit else None
+    # if not commit else None solve：column_names = [desc[0] for desc in cursor.description]
     cursor.close()
     con.close()
     return result, column_names
@@ -57,16 +59,26 @@ def authenticate_user(username: str, password: str):
 
 
 def check_existing_username(username: str):
-    query = "SELECT * FROM member WHERE username = %s"
+    query = "SELECT * FROM `member` WHERE username = %s"
     return execute_query(query, (username,))
 
 def insert_new_user(name: str, username: str, password: str):
     insert_query = "INSERT INTO member (name, username, password) VALUES (%s, %s, %s)"
     return execute_query(insert_query, (name, username, password), commit=True)
 
+def insert_message(member_id: int, content:str):
+    insert_query = "INSERT INTO `message` (member_id, content) VALUES (%s, %s)"
+    return execute_query(insert_query, (member_id, content), commit=True)
+
+def delete_message_from_db(message_id: int):
+    delete_query = "DELETE FROM `message` WHERE id = %s"
+    return execute_query(delete_query, (message_id,), commit=True)
+
 def join_member_message():
     join_query = "SELECT * FROM `message` JOIN `member` ON message.member_id = member.id"
     return execute_query(join_query)
+
+
 
 
 class Member(BaseModel):
@@ -113,26 +125,27 @@ async def process_login(request: Request, username: str = Form(None), password: 
                 continue
             # there is only one user login a time, so we can use index 0
             #write the user data to the session
+            # session {'SIGNED-IN': True, 'username': 'test', 'id': 1, 'name': 'test2', 'password': 'test', 'follower_count': 10}
             session[column_name] = user_data[0][i]
         
     request.session["SIGNED-IN"] = True
     # request.session["username"] = username
     # request.session["name"] = user_name
-    # session {'SIGNED-IN': True, 'username': 'test', 'id': 1, 'name': 'test2', 'password': 'test', 'follower_count': 10}
+    
     print("session", request.session)
     return RedirectResponse(url="/member", status_code=303)
     
 
 @app.post("/signup", response_class=HTMLResponse, name="signup")
 async def process_signup(request: Request, signup_name: str = Form(None), signup_username: str = Form(None), signup_password: str = Form(None)):
-    if not signup_username or not signup_username or not signup_password:
-        # error_message = "姓名、帳號或密碼不能為空"
-        # return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
-        return RedirectResponse(url="/", status_code=303)
+    if not signup_name or not signup_username or not signup_password:
+        error_message = "姓名、帳號或密碼不能為空"
+        return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
+        
     
     # Check if username already exists
     existing_user = check_existing_username(signup_username)
-    if existing_user:
+    if existing_user[0] != []:
         error_message = "Repeated username"
         return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
 
@@ -153,12 +166,14 @@ async def member(request: Request, session: dict = Depends(get_session)):
 
         messages_list = []
         for message in messages:
-            content = message[2]
+            message_id = message[0]
             name = message[6]
-            messages_list.append((name, content))
+            content = message[2]
+            member_id = message[1]
+            messages_list.append((message_id, name, content, member_id))
         print(messages_list)
 
-        return templates.TemplateResponse(request=request, name="member.html", context={"username": session.get("username"), "messages_list": messages_list})
+        return templates.TemplateResponse(request=request, name="member.html", context={"name": session.get("name"), "messages_list": messages_list})
 
 
     return RedirectResponse(url="/", status_code=303)
@@ -175,14 +190,25 @@ async def signout(request: Request, session: dict = Depends(get_session)):
     # Redirect to the home page
     return RedirectResponse(url="/", status_code=303)
 
-@app.post("/createMessage", response_class=HTMLResponse)
+@app.post("/createMessage", response_class=HTMLResponse, name="createMessage")
 async def create_message(request: Request, message: str = Form(...), session: dict = Depends(get_session)):
     if not session["SIGNED-IN"]:
         return RedirectResponse(url="/", status_code=303)
 
     # Insert the message into the message table
-    insert_query = "INSERT INTO message (member_id, message) VALUES (%s, %s)"
-    execute_query(insert_query, (session["id"], message), commit=True)
+    insert_message(session["id"],message)
+    return RedirectResponse(url="/member", status_code=303)
+
+@app.post("/deleteMessage", response_class=HTMLResponse, name="deleteMessage")
+async def delete_message(request: Request, message_id: int = Form(...), member_id: int = Form(...), session: dict = Depends(get_session)):
+    print(session)
+    if not session["SIGNED-IN"]:
+        return RedirectResponse(url="/", status_code=303)
+
+    if session["id"] == member_id:
+        delete_message_from_db(message_id)
+    # Delete the message from the message table
+    
 
     return RedirectResponse(url="/member", status_code=303)
 
