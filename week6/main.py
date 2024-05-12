@@ -77,8 +77,9 @@ def join_member_message():
     join_query = "SELECT * FROM `message` JOIN `member` ON message.member_id = member.id"
     return execute_query(join_query)
 
-
-
+def find_message_member_id(message_id: int):
+    query = "SELECT member_id FROM `message` JOIN `member` ON message.member_id = member.id WHERE message.id = %s"
+    return execute_query(query, (message_id,))
 
 class Member(BaseModel):
     #id: int
@@ -88,12 +89,10 @@ class Member(BaseModel):
     #follower_count: int
     #time: str 
 
-
 async def get_session(request: Request):
     session = request.session
     session.setdefault("SIGNED-IN", False)
     return session
-
 
 @app.get("/", response_class=HTMLResponse, name="home")
 async def homepage(request: Request, session: dict = Depends(get_session)):
@@ -102,7 +101,6 @@ async def homepage(request: Request, session: dict = Depends(get_session)):
         return RedirectResponse(url="/member", status_code=303)
     
     return templates.TemplateResponse(request=request, name="signin.html")
-
 
 @app.post("/signin", response_class=HTMLResponse, name="signin")
 async def process_login(request: Request, username: str = Form(None), password: str = Form(None), session=Depends(get_session)):
@@ -133,7 +131,6 @@ async def process_login(request: Request, username: str = Form(None), password: 
     print("session", request.session)
     return RedirectResponse(url="/member", status_code=303)
     
-
 @app.post("/signup", response_class=HTMLResponse, name="signup")
 async def process_signup(request: Request, signup_name: str = Form(None), signup_username: str = Form(None), signup_password: str = Form(None)):
     if not signup_name or not signup_username or not signup_password:
@@ -151,7 +148,6 @@ async def process_signup(request: Request, signup_name: str = Form(None), signup
 
     # Redirect to the home page
     return RedirectResponse(url="/", status_code=303)
-
 
 @app.get("/member", response_class=HTMLResponse)
 async def member(request: Request, session: dict = Depends(get_session)):
@@ -197,16 +193,17 @@ async def create_message(request: Request, message: str = Form(...), session: di
     return RedirectResponse(url="/member", status_code=303)
 
 @app.post("/deleteMessage", response_class=HTMLResponse, name="deleteMessage")
-async def delete_message(request: Request, message_id: int = Form(...), member_id: int = Form(...), session: dict = Depends(get_session)):
+async def delete_message(request: Request, message_id: int = Form(...), session: dict = Depends(get_session)):
     print(session)
     if not session["SIGNED-IN"]:
         return RedirectResponse(url="/", status_code=303)
 
-    if session["id"] == member_id:
+    message_member_id = find_message_member_id(message_id)[0][0][0] #([(5,)], ['member_id'])
+    print("message_member_id", message_member_id)
+    if session["id"] == message_member_id:
         delete_message_from_db(message_id)
     # Delete the message from the message table
     
-
     return RedirectResponse(url="/member", status_code=303)
 
 @app.get("/square/{enter_int}", response_class=HTMLResponse, name="square")
