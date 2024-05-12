@@ -58,6 +58,10 @@ body {
             background-color: #9ea6af;
         }
 
+        form.messages-list {
+            display: inline;
+        }
+
         /* Style for message list */
         #message_list {
             font-size: 1.3em;
@@ -70,5 +74,3 @@ body {
             display: inline;
             margin-bottom: 10px;
         }
-        
-        

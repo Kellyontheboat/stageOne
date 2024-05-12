@@ -6,7 +6,7 @@
 {% block content %}
   
   <h2>註冊帳號</h2>
-  <form action="{{ url_for('signup') }}" method="post" onsubmit="submitForm(event);" id="signupForm" novalidate>
+  <form action="{{ url_for('signup') }}" method="post" id="signupForm" novalidate>
     <div class="form-group">
       <label for="signup_name">姓名</label>
       <input type="text" id="signup_name" name="signup_name" required>

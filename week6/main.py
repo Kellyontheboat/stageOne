@@ -8,7 +8,6 @@ from starlette.requests import Request
 from typing import Optional, List, Tuple
 
 import mysql.connector.pooling
-#import pdb
 import os
 
 app = FastAPI()
@@ -119,19 +118,18 @@ async def process_login(request: Request, username: str = Form(None), password: 
         error_message = "帳號或密碼輸入錯誤"
         return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
 
+    #if user_data: store the user data in the session
     for i, column_name in enumerate(column_names):
             # Exclude the 'time' column
             if column_name == 'time':
                 continue
+        
+            session[column_name] = user_data[0][i]
             # there is only one user login a time, so we can use index 0
             #write the user data to the session
             # session {'SIGNED-IN': True, 'username': 'test', 'id': 1, 'name': 'test2', 'password': 'test', 'follower_count': 10}
-            session[column_name] = user_data[0][i]
         
     request.session["SIGNED-IN"] = True
-    # request.session["username"] = username
-    # request.session["name"] = user_name
-    
     print("session", request.session)
     return RedirectResponse(url="/member", status_code=303)
     
@@ -142,7 +140,6 @@ async def process_signup(request: Request, signup_name: str = Form(None), signup
         error_message = "姓名、帳號或密碼不能為空"
         return RedirectResponse(url=f"/error?message={error_message}", status_code=303)
         
-    
     # Check if username already exists
     existing_user = check_existing_username(signup_username)
     if existing_user[0] != []:
@@ -184,9 +181,9 @@ async def error(request: Request, message: str = None):
 
 @app.get("/signout", response_class=HTMLResponse)
 async def signout(request: Request, session: dict = Depends(get_session)):
-    # Clear the session data
     # Clear all data in the session
     session.clear()
+    print("session", session)
     # Redirect to the home page
     return RedirectResponse(url="/", status_code=303)
 
@@ -196,7 +193,7 @@ async def create_message(request: Request, message: str = Form(...), session: di
         return RedirectResponse(url="/", status_code=303)
 
     # Insert the message into the message table
-    insert_message(session["id"],message)
+    insert_message(session["id"], message)
     return RedirectResponse(url="/member", status_code=303)
 
 @app.post("/deleteMessage", response_class=HTMLResponse, name="deleteMessage")
@@ -211,8 +208,6 @@ async def delete_message(request: Request, message_id: int = Form(...), member_i
     
 
     return RedirectResponse(url="/member", status_code=303)
-
-
 
 @app.get("/square/{enter_int}", response_class=HTMLResponse, name="square")
 async def square_result(request: Request, enter_int: Optional[int] = None):
