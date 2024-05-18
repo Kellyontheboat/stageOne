@@ -268,7 +268,7 @@ async def delete_message(request: Request, message_id: int = Form(...), session:
     if not session["SIGNED-IN"]:
         return RedirectResponse(url="/", status_code=303)
 
-    message_member_id = find_message_member_id(message_id)[0][0][0] #([(5,)], ['member_id'])
+    message_member_id = find_message_member_id(message_id)[0][0][0] #([(5,)], ['member_id']) / use message_id to find the member_id
     print("message_member_id", message_member_id)
     if session["id"] == message_member_id:
         delete_message_from_db(message_id)
