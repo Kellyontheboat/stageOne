@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -111,6 +113,17 @@ async def get_session(request: Request):
     session.setdefault("SIGNED-IN", False)
     return session
 
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        return JSONResponse(status_code=404, content={"data": "null"})
+    else:
+        return JSONResponse(status_code=exc.status_code, content={"error": "true"})
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(status_code=422, content={"error": "true"})
+
 @app.get("/", response_class=HTMLResponse, name="home")
 async def homepage(request: Request, session: dict = Depends(get_session)):
 
@@ -167,7 +180,7 @@ async def process_signup(request: Request, signup_name: str = Form(None), signup
     return RedirectResponse(url="/", status_code=303)
 
 @app.get("/member", response_class=HTMLResponse)
-async def member(request: Request, session: dict = Depends(get_session), q: str | None = None): # same as older version q: Optional[str] = None
+async def member(request: Request, session: dict = Depends(get_session)): 
     if session["SIGNED-IN"] == True:
 
         messages, column_names = join_member_message()
@@ -180,58 +193,55 @@ async def member(request: Request, session: dict = Depends(get_session), q: str 
             member_id = message[1]
             messages_list.append((message_id, name, content, member_id))
 
-        if q:
-            found_member = find_member_by_username(q)
+        return templates.TemplateResponse(request=request, name="member.html", context={"name": session.get("name"), "messages_list": messages_list})
+
+    return RedirectResponse(url="/", status_code=303)
+
+@app.get("/api/member", response_class=JSONResponse)
+async def get_member(session: dict = Depends(get_session), username: str | None = None):# same as older version username: Optional[str] = None / username is the fetch url query parameter from js searchUser() 
+    if session["SIGNED-IN"] == True:
+        if username:
+            found_member = find_member_by_username(username)
             # found_member:
             # ([(4, 'Lily', 'Lily123', 'Lily456', 40, datetime.datetime(2024, 5, 7, 23, 4, 13))], 
             #  ['id', 'name', 'username', 'password', 'follower_count', 'time'])
 
             if not found_member[0]: 
-                not_found = {
-                "data": "null"
-                }
-                print(not_found)
-                result_json = json.dumps(not_found, ensure_ascii=False)
-                return result_json
-            
-            result_dict = {
+                raise HTTPException(status_code=404)
+        
+            # Convert the result_dict to a JSON string
+            return JSONResponse(status_code=200, content={
                 "data": {
                     "id": found_member[0][0][0],
                     "name": found_member[0][0][1],
                     "username": found_member[0][0][2]
                 }
-            }
-            
-            # Convert the result_dict to a JSON string
-            result_json = json.dumps(result_dict, ensure_ascii=False)
-            return result_json
-
-        return templates.TemplateResponse(request=request, name="member.html", context={"name": session.get("name"), "messages_list": messages_list})
-
-
-    return RedirectResponse(url="/", status_code=303)
-
-
+            })
+        else:
+            return RedirectResponse(url="/", status_code=303)        
+    
+    raise HTTPException(status_code=401)
 
 @app.patch("/api/member", response_class=JSONResponse)
-# from the request body, get the UpdateNameRequest object
+# from the request body, get the UpdateNameRequest object(Pydantic model)
 async def update_member(update_name_req: UpdateNameRequest, session: dict = Depends(get_session)):
 
-    if not session["SIGNED-IN"]:
-        return JSONResponse(status_code=401, content={"error": True, "message": "User not signed in"})
+    if session["SIGNED-IN"] == True:
+        
+        new_name = update_name_req.name #from the request body, get the name value
+        try:
+            if update_member_name(new_name, session["id"]):
+                session["name"] = new_name
+                return JSONResponse(status_code=200, content={"ok": True})
 
-    new_name = update_name_req.name
-    try:
-        if update_member_name(new_name, session["id"]):
-            session["name"] = new_name
-            return JSONResponse(status_code=200, content={"ok": True})
-
-        else:
-            return JSONResponse(status_code=500, content={"error":True})
-    except Exception as e:
-        print(f"Error updating member name: {e}")
-        return JSONResponse(status_code=500, content={"error": True,})
+            else:
+                raise HTTPException(status_code=500)
+        except Exception as e:
+            print(f"Error updating member name: {e}")
+            raise HTTPException(status_code=500)
     
+    raise HTTPException(status_code=401)
+
 @app.get("/error", response_class=HTMLResponse)
 async def error(request: Request, message: str = None):
     return templates.TemplateResponse("error.html", {"request": request, "message": message})

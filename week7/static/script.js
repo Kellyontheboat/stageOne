@@ -58,7 +58,7 @@ async function searchUser() {
   }
 
   try {
-    const response = await fetch(`/member?q=${username}`);
+    const response = await fetch(`/api/member?username=${username}`);
     const result = await response.json();
 
     if (result.data && result.data !== "null") {
