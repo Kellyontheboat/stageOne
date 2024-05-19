@@ -116,19 +116,19 @@ async def get_session(request: Request):
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
-        return JSONResponse(status_code=404, content={"data": "null"})
+        return JSONResponse(status_code=404, content={"data": None})
     else:
-        return JSONResponse(status_code=exc.status_code, content={"error": "true"})
+        return JSONResponse(status_code=exc.status_code, content={"error": True})
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    return JSONResponse(status_code=422, content={"error": "true"})
+    return JSONResponse(status_code=422, content={"error": True})
 
 @app.exception_handler(Exception)  # Add this handler for general exceptions
 async def general_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
-        content={"error": "true"},
+        content={"error": True},
     )
 
 @app.get("/", response_class=HTMLResponse, name="home")
