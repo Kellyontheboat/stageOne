@@ -124,6 +124,13 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(status_code=422, content={"error": "true"})
 
+@app.exception_handler(Exception)  # Add this handler for general exceptions
+async def general_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"error": "true"},
+    )
+
 @app.get("/", response_class=HTMLResponse, name="home")
 async def homepage(request: Request, session: dict = Depends(get_session)):
 
@@ -200,6 +207,7 @@ async def member(request: Request, session: dict = Depends(get_session)):
 @app.get("/api/member", response_class=JSONResponse)
 async def get_member(session: dict = Depends(get_session), username: str | None = None):# same as older version username: Optional[str] = None / username is the fetch url query parameter from js searchUser() 
     if session["SIGNED-IN"] == True:
+
         if username:
             found_member = find_member_by_username(username)
             # found_member:
@@ -218,7 +226,7 @@ async def get_member(session: dict = Depends(get_session), username: str | None 
                 }
             })
         else:
-            return RedirectResponse(url="/", status_code=303)        
+            raise HTTPException(status_code=400)       
     
     raise HTTPException(status_code=401)
 
