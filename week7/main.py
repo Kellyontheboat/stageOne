@@ -81,7 +81,7 @@ def join_member_message():
     return execute_query(join_query)
 
 def find_message_member_id(message_id: int):
-    query = "SELECT member_id FROM `message` JOIN `member` ON message.member_id = member.id WHERE message.id = %s"
+    query = "SELECT member_id FROM `message` WHERE message.id = %s"
     return execute_query(query, (message_id,))
 
 def find_member_by_username(username: str):
