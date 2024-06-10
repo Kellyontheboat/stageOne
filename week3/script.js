@@ -1,6 +1,6 @@
 let globalUrls;
 let globalTitles;
-async function fetchUrls() {
+async function fetchUrlsTitles() {
   const response = await fetch('spot.csv');
   const csvData = await response.text();
   const lines = csvData.split('\n');
@@ -87,8 +87,8 @@ function createBigBoxes() {
   }
 }
 
-// Call fetchUrls function to fetch the data and create elements once data is available
-fetchUrls();
+// Call fetchUrlsTitles function to fetch the data and create elements once data is available
+fetchUrlsTitles();
 
 // !Item1~4
 const navContainer = document.querySelector('.nav-item-container');

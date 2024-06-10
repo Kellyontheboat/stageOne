@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}登入成功{% endblock %}
+{% block h1 %}歡迎光臨，這是會員頁{% endblock %}
+
+{% block content %}
+<h1 id="welcome_message">{{ name }}，歡迎登入系統</h1>
+<a href="/signout">登出系統</a>
+
+<hr>
+
+<h2>快來留言吧</h2>
+<form action="{{ url_for('createMessage') }}" method="post" novalidate>
+  <div class="form-group">
+    <label for="message">內容</label>
+    <input type="text" id="message" name="message" required>
+  </div>
+  <div class="form-group">
+    <button type="submit">送出</button>
+  </div>
+</form>
+
+<hr>
+
+{% if messages_list %}
+<ul id="message_list">
+  {% for message in messages_list %}
+  <li class="message-item">
+    <div>
+      {{ message.1 }}: {{ message.2 }}
+      {% if message.1 == name %}
+      <form action="/deleteMessage" method="post" class="messages-list">
+        <input type="hidden" name="message_id" value="{{ message.0 }}">
+        <input type="hidden" name="member_id" value="{{ message.3 }}">
+        <button type="submit" class="delete-button"
+          onclick="return confirm('Are you sure you want to delete this message?')">X</button>
+      </form>
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No messages available.</p>4
+{% endif %}
+
+
+<h2>查詢會員姓名</h2>
+<div id="search_container">
+  <label for="search_username"></label>
+  <input type="text" id="search_username" name="search_username" placeholder="搜尋使用者">
+  <!-- {% if search_result %}
+      <div>
+        <p>搜尋結果: {{ search_result }}</p>
+        <div>
+      {% endif %} -->
+  <button onclick="searchUser()">搜尋</button>
+  <!-- 搜尋結果 -->
+</div>
+
+<h2>更新我的姓名</h2>
+<div id="update_container">
+  <label for="update_name"></label>
+  <input type="text" id="update_name" name="update_name" placeholder="輸入新姓名">
+  <button onclick="updateName()">更新</button>
+  <!-- 更新結果 -->
+</div>
+
+{% endblock %}

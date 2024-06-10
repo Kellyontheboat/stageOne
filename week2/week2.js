@@ -6,8 +6,8 @@ function findAndPrint(messages, currentStation) {
   let minDifference = station.length //先設定最小差距為所有站名的數量
   let difference = Infinity
   let closestFriend = null
-
-    for (let friend in messages) { //遍歷每個朋友的訊息
+    
+    for (let friend in messages) { //遍歷每個朋友的訊息 
       const sanitizedMessage = messages[friend].replace(/[ ,.]/g, '') //去除訊息中的空格和標點符號
       let foundStation = false //設定一個狀態，若訊息中的站名找到配對則停止遍歷sanitizedStation
 

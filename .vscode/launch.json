@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "name": "Python 偵錯工具: FastAPI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "week8.main",
+      "args": [
+        ":app"
+      ],
+      "jinja": true,
+      "justMyCode": false
+    }
+  ]
+}
